@@ -22,25 +22,25 @@ export function encodeBasic(email: string, password: string): string {
   return btoa(String.fromCharCode(...bytes))
 }
 
-/** Credentials live in sessionStorage: they survive reloads but are dropped when the tab closes. */
+/** Credentials live in localStorage: the login survives reloads, closing the tab and browser restarts until logout. */
 export const credentials = {
   get(): string | null {
     try {
-      return sessionStorage.getItem(CREDENTIALS_KEY)
+      return localStorage.getItem(CREDENTIALS_KEY)
     } catch {
       return null
     }
   },
   set(token: string) {
     try {
-      sessionStorage.setItem(CREDENTIALS_KEY, token)
+      localStorage.setItem(CREDENTIALS_KEY, token)
     } catch {
       /* storage unavailable: session lasts until reload */
     }
   },
   clear() {
     try {
-      sessionStorage.removeItem(CREDENTIALS_KEY)
+      localStorage.removeItem(CREDENTIALS_KEY)
     } catch {
       /* storage unavailable */
     }

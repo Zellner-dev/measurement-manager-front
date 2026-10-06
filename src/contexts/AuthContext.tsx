@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { credentials, encodeBasic, UNAUTHORIZED_EVENT } from '../services/api'
+import { ApiError, credentials, encodeBasic, UNAUTHORIZED_EVENT } from '../services/api'
 import { userService } from '../services/userService'
 import type { User } from '../types/api'
 
@@ -25,7 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userService
       .me()
       .then(setUser)
-      .catch(() => credentials.clear())
+      // Only invalid credentials drop the stored token; a network/server failure keeps it for the next load
+      .catch((error) => {
+        if (error instanceof ApiError && error.status === 401) credentials.clear()
+      })
       .finally(() => setInitializing(false))
   }, [])
 
