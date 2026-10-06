@@ -2,11 +2,14 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 
-COPY package.json package-lock.json .npmrc ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+
+# Vite embute VITE_* no build; quando passado, sobrescreve o valor do .env
+ARG VITE_API_URL
+RUN if [ -n "$VITE_API_URL" ]; then export VITE_API_URL; fi && npm run build
 
 # ---- Serve ----
 FROM nginx:1.27-alpine
