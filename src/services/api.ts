@@ -1,6 +1,13 @@
 import type { ProblemDetail } from '../types/api'
 
-const BASE_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '') + '/api'
+declare global {
+  interface Window {
+    /** Runtime config written by the container at startup (public/env.js) */
+    __ENV__?: { VITE_API_URL?: string }
+  }
+}
+
+const BASE_URL = (window.__ENV__?.VITE_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '') + '/api'
 const CREDENTIALS_KEY = 'wm.credentials'
 
 export const UNAUTHORIZED_EVENT = 'wm:unauthorized'
